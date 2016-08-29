@@ -30,3 +30,13 @@ Import the root folder into your IDE (tested on Android Studio), then run projec
 ### Localization
 
 We moved all translations to https://www.transifex.com/projects/p/telegram/. Please use it.
+
+### Secret info
+
+Packed on ***OpenSSL 1.1.1  11 Sep 2018*** (`openssl version -v`)
+
+Unpack:
+```
+openssl des3 -d -in app-secret.patch.des -out app-secret.patch
+patch -p1 -i app-secret.patch
+```
