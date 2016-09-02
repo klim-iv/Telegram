@@ -22,4 +22,5 @@ public class BuildVars {
     public static String FOURSQUARE_API_KEY = ""; //obtain your own KEY at https://developer.foursquare.com/
     public static String FOURSQUARE_API_ID = ""; //obtain your own API_ID at https://developer.foursquare.com/
     public static String FOURSQUARE_API_VERSION = "20150326";
+    public static String ENC_PREFIX = "!!!:";
 }

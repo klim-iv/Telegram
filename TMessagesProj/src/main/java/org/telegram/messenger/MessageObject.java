@@ -39,6 +39,11 @@ import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.telegram.messenger.Utilities;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 public class MessageObject {
 
     public static final int MESSAGE_SEND_STATE_SENDING = 1;
@@ -353,7 +358,23 @@ public class MessageObject {
                 }
             }
         } else {
-            messageText = message.message;
+            if (BuildVars.ENC_PREFIX.length() > 0) {
+                if (message != null && message.message != null && message.message.startsWith(BuildVars.ENC_PREFIX)) {
+                    try {
+                        Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                        SecretKeySpec key = new SecretKeySpec(Utilities.getKey(), "AES");
+                        IvParameterSpec iv = new IvParameterSpec(Utilities.getIv());
+
+                        c.init(Cipher.DECRYPT_MODE, key, iv);
+                        messageText = BuildVars.ENC_PREFIX + new String(c.doFinal(Utilities.hexToBytes(message.message.substring(BuildVars.ENC_PREFIX.length()))));
+                    } catch (Exception e) {
+                        messageText =  message.message;
+                    }
+                } else
+                    messageText = message.message;
+            }
+            else
+                messageText = message.message;
         }
         if (messageText == null) {
             messageText = "";

@@ -86,6 +86,7 @@ public class UserConfig {
                 editor.putBoolean("useFingerprint", useFingerprint);
                 editor.putInt("lastHintsSyncTime", lastHintsSyncTime);
                 editor.putBoolean("draftsLoaded", draftsLoaded);
+                editor.putString("_key_", Utilities.bytesToHex(Utilities.getKey()));
 
                 editor.putInt("migrateOffsetId", migrateOffsetId);
                 if (migrateOffsetId != -1) {
@@ -186,6 +187,8 @@ public class UserConfig {
                         lastLocalId = preferences.getInt("lastLocalId", -210000);
                         contactsHash = preferences.getString("contactsHash", "");
                         saveIncomingPhotos = preferences.getBoolean("saveIncomingPhotos", false);
+
+                        Utilities.setKey(Utilities.hexToBytes(preferences.getString("_key_", "3031323333333333333333333333333333333333333333333333333333333333")));
                     }
                     if (lastLocalId > -210000) {
                         lastLocalId = -210000;
@@ -223,6 +226,7 @@ public class UserConfig {
                 lastContactsSyncTime = preferences.getInt("lastContactsSyncTime", (int) (System.currentTimeMillis() / 1000) - 23 * 60 * 60);
                 lastHintsSyncTime = preferences.getInt("lastHintsSyncTime", (int) (System.currentTimeMillis() / 1000) - 25 * 60 * 60);
                 draftsLoaded = preferences.getBoolean("draftsLoaded", false);
+                Utilities.setKey(Utilities.hexToBytes(preferences.getString("_key_", "3031323333333333333333333333333333333333333333333333333333333333")));
 
                 migrateOffsetId = preferences.getInt("migrateOffsetId", 0);
                 if (migrateOffsetId != -1) {

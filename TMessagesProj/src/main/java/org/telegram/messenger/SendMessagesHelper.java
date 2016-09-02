@@ -44,6 +44,12 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.telegram.messenger.BuildVars;
+import org.telegram.messenger.Utilities;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 public class SendMessagesHelper implements NotificationCenter.NotificationCenterDelegate {
 
     private TLRPC.ChatFull currentChatInfo = null;
@@ -954,6 +960,20 @@ public class SendMessagesHelper implements NotificationCenter.NotificationCenter
     public int editMessage(MessageObject messageObject, String message, boolean searchLinks, final BaseFragment fragment, ArrayList<TLRPC.MessageEntity> entities, final Runnable callback) {
         if (fragment == null || fragment.getParentActivity() == null || callback == null) {
             return 0;
+        }
+
+        if (BuildVars.ENC_PREFIX.length() > 0) {
+            if (message != null && message.startsWith(BuildVars.ENC_PREFIX)) {
+                try {
+                    Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                    SecretKeySpec key = new SecretKeySpec(Utilities.getKey(), "AES");
+                    IvParameterSpec iv = new IvParameterSpec(Utilities.getIv());
+
+                    c.init(Cipher.ENCRYPT_MODE, key, iv);
+                    message = BuildVars.ENC_PREFIX + Utilities.bytesToHex(c.doFinal(message.substring(BuildVars.ENC_PREFIX.length()).getBytes()));
+                } catch (Exception e) {
+                }
+            }
         }
 
         TLRPC.TL_messages_editMessage req = new TLRPC.TL_messages_editMessage();

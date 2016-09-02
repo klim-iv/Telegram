@@ -55,6 +55,7 @@ import org.telegram.messenger.FileLog;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.AnimatorListenerAdapterProxy;
+import org.telegram.messenger.Utilities;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -741,6 +742,9 @@ public class PasscodeView extends FrameLayout {
                 onPasscodeError();
                 return;
             }
+
+            Utilities.setKey(password);
+
             if (!UserConfig.checkPasscode(password)) {
                 passwordEditText.setText("");
                 passwordEditText2.eraseAllCharacters(true);
