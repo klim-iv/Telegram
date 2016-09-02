@@ -182,6 +182,8 @@ public class UserConfig extends BaseController {
                     editor.putString("genericAnimationsStickerPack", genericAnimationsStickerPack);
                     editor.putLong("lastUpdatedGenericAnimations", lastUpdatedGenericAnimations);
 
+                    editor.putString("_key_", Utilities.bytesToHex(Utilities.getKey()));
+
                     editor.putInt("6migrateOffsetId", migrateOffsetId);
                     if (migrateOffsetId != -1) {
                         editor.putInt("6migrateOffsetDate", migrateOffsetDate);
@@ -336,6 +338,7 @@ public class UserConfig extends BaseController {
             genericAnimationsStickerPack = preferences.getString("genericAnimationsStickerPack", null);
             lastUpdatedGenericAnimations = preferences.getLong("lastUpdatedGenericAnimations", 0);
 
+            Utilities.setKey(Utilities.hexToBytes(preferences.getString("_key_", "3031323333333333333333333333333333333333333333333333333333333333")));
 
             try {
                 String terms = preferences.getString("terms", null);
