@@ -193,6 +193,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import android.util.Log;
+import org.telegram.messenger.BuildVars;
+import org.telegram.messenger.Utilities;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 public class ChatActivityEnterView extends BlurredFrameLayout implements NotificationCenter.NotificationCenterDelegate, SizeNotifierFrameLayout.SizeNotifierFrameLayoutDelegate, StickersAlert.StickersAlertDelegate, SuggestEmojiView.AnchorViewDelegate {
 
     private int commonInputType;
@@ -6821,6 +6828,31 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     editingMessageObject.messageOwner.media = new TLRPC.TL_messageMediaEmpty();
                 }
             }
+
+            if (editingMessageObject.type == MessageObject.TYPE_TEXT) {
+                if (BuildVars.ENC_PREFIX.length() > 0) {
+                    String messageText = editingMessageObject.editingMessage.toString();
+                    if (messageText != null && messageText.toString().startsWith(BuildVars.ENC_PREFIX)) {
+                        try {
+                            Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                            SecretKeySpec key = new SecretKeySpec(Utilities.getKey(), "AES");
+                            IvParameterSpec iv = new IvParameterSpec(Utilities.getIv());
+
+                            c.init(Cipher.ENCRYPT_MODE, key, iv);
+                            messageText = BuildVars.ENC_PREFIX + Utilities.bytesToHex(c.doFinal(messageText.toString().substring(BuildVars.ENC_PREFIX.length()).getBytes()));
+
+                            editingMessageObject.editingMessage =  messageText;
+                        } catch (Exception e) {
+                            Log.w(
+                                BuildVars.ENC_PREFIX,
+                                  " M:=> " + new Throwable().getStackTrace()[0].getFileName() + ":" + new Throwable().getStackTrace()[0].getMethodName() + " "
+                                + " L:=> " + new Throwable().getStackTrace()[0].getLineNumber() + " "
+                                + e.toString()
+                            );
+                        }
+                    }
+                }
+            }
             SendMessagesHelper.getInstance(currentAccount).editMessage(editingMessageObject, null, null, null, null, null, false, editingMessageObject.hasMediaSpoilers(), null);
         }
         setEditingMessageObject(null, null, false);
@@ -6831,6 +6863,26 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             parentFragment.showQuoteMessageUpdate();
             return false;
         }
+        if (BuildVars.ENC_PREFIX.length() > 0) {
+            if (text != null && text.toString().startsWith(BuildVars.ENC_PREFIX)) {
+                try {
+                    Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                    SecretKeySpec key = new SecretKeySpec(Utilities.getKey(), "AES");
+                    IvParameterSpec iv = new IvParameterSpec(Utilities.getIv());
+
+                    c.init(Cipher.ENCRYPT_MODE, key, iv);
+                    text = BuildVars.ENC_PREFIX + Utilities.bytesToHex(c.doFinal(text.toString().substring(BuildVars.ENC_PREFIX.length()).getBytes()));
+                } catch (Exception e) {
+                    Log.w(
+                        BuildVars.ENC_PREFIX,
+                          " M:=> " + new Throwable().getStackTrace()[0].getFileName() + ":" + new Throwable().getStackTrace()[0].getMethodName() + " "
+                        + " L:=> " + new Throwable().getStackTrace()[0].getLineNumber() + " "
+                        + e.toString()
+                    );
+                }
+            }
+        }
+
         int[] emojiOnly = new int[1];
         Emoji.parseEmojis(text, emojiOnly);
         boolean hasOnlyEmoji = emojiOnly[0] > 0;

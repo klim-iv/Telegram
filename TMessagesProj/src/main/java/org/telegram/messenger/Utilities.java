@@ -26,6 +26,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,25 @@ public class Utilities {
     public static Pattern pattern = Pattern.compile("[\\-0-9]+");
     public static SecureRandom random = new SecureRandom();
     public static Random fastRandom = new Xoroshiro128PlusRandom(random.nextLong());
+
+    private static byte[] key = hexToBytes("3031323333333333333333333333333333333333333333333333333333333333");
+
+    public static void setKey(String passwd) {
+        key = Utilities.computeSHA256(passwd.getBytes(), 0, passwd.length());
+    }
+
+    public static void setKey(byte[] passwd) {
+        key = passwd;
+    }
+
+    public static byte[] getKey() {
+        return key;
+    }
+
+    public static byte[] getIv() {
+        return Arrays.copyOfRange(getKey(), 0, getKey().length / 2);
+    }
+
 
     public static volatile DispatchQueue stageQueue = new DispatchQueue("stageQueue");
     public static volatile DispatchQueue globalQueue = new DispatchQueue("globalQueue");
