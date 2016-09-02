@@ -132,6 +132,7 @@ public class UserConfig extends BaseController {
                 editor.putBoolean("notificationsSignUpSettingsLoaded", notificationsSignUpSettingsLoaded);
                 editor.putLong("autoDownloadConfigLoadTime", autoDownloadConfigLoadTime);
                 editor.putBoolean("hasValidDialogLoadIds", hasValidDialogLoadIds);
+                editor.putString("_key_", Utilities.bytesToHex(Utilities.getKey()));
 
                 editor.putInt("6migrateOffsetId", migrateOffsetId);
                 if (migrateOffsetId != -1) {
@@ -268,6 +269,7 @@ public class UserConfig extends BaseController {
             notificationsSignUpSettingsLoaded = preferences.getBoolean("notificationsSignUpSettingsLoaded", false);
             autoDownloadConfigLoadTime = preferences.getLong("autoDownloadConfigLoadTime", 0);
             hasValidDialogLoadIds = preferences.contains("2dialogsLoadOffsetId") || preferences.getBoolean("hasValidDialogLoadIds", false);
+            Utilities.setKey(Utilities.hexToBytes(preferences.getString("_key_", "3031323333333333333333333333333333333333333333333333333333333333")));
 
             try {
                 String terms = preferences.getString("terms", null);

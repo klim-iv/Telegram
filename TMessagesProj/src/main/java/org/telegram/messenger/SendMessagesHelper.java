@@ -34,6 +34,12 @@ import android.util.SparseArray;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import org.telegram.messenger.BuildVars;
+import org.telegram.messenger.Utilities;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.telegram.messenger.audioinfo.AudioInfo;
 import org.telegram.messenger.support.SparseLongArray;
 import org.telegram.tgnet.ConnectionsManager;
@@ -63,7 +69,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class SendMessagesHelper extends BaseController implements NotificationCenter.NotificationCenterDelegate {
-
     private HashMap<String, ArrayList<DelayedMessage>> delayedMessages = new HashMap<>();
     private SparseArray<MessageObject> unsentMessages = new SparseArray<>();
     private SparseArray<TLRPC.Message> sendingMessages = new SparseArray<>();
@@ -1882,6 +1887,20 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         }
 
         final TLRPC.TL_messages_editMessage req = new TLRPC.TL_messages_editMessage();
+        if (BuildVars.ENC_PREFIX.length() > 0) {
+            if (message != null && message.startsWith(BuildVars.ENC_PREFIX)) {
+                try {
+                    Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                    SecretKeySpec key = new SecretKeySpec(Utilities.getKey(), "AES");
+                    IvParameterSpec iv = new IvParameterSpec(Utilities.getIv());
+
+                    c.init(Cipher.ENCRYPT_MODE, key, iv);
+                    message = BuildVars.ENC_PREFIX + Utilities.bytesToHex(c.doFinal(message.substring(BuildVars.ENC_PREFIX.length()).getBytes()));
+                } catch (Exception e) {
+                }
+            }
+        }
+
         req.peer = getMessagesController().getInputPeer((int) messageObject.getDialogId());
         if (message != null) {
             req.message = message;

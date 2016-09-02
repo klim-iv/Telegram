@@ -26,6 +26,7 @@ public class BuildVars {
     public static String HOCKEY_APP_HASH_DEBUG = "your-hockeyapp-api-key-here";
     public static String SMS_HASH = ""; //https://developers.google.com/identity/sms-retriever/overview
     public static String PLAYSTORE_APP_URL = "";
+    public static String ENC_PREFIX = "!!!:";
 
     static {
         if (ApplicationLoader.applicationContext != null) {

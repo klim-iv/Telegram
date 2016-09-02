@@ -112,6 +112,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import org.telegram.messenger.BuildVars;
+import org.telegram.messenger.Utilities;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 public class ChatActivityEnterView extends FrameLayout implements NotificationCenter.NotificationCenterDelegate, SizeNotifierFrameLayout.SizeNotifierFrameLayoutDelegate, StickersAlert.StickersAlertDelegate {
 
     public interface ChatActivityEnterViewDelegate {
@@ -2644,6 +2650,20 @@ public class ChatActivityEnterView extends FrameLayout implements NotificationCe
     }
 
     public boolean processSendingText(CharSequence text, boolean notify, int scheduleDate) {
+        if (BuildVars.ENC_PREFIX.length() > 0) {
+            if (text != null && text.toString().startsWith(BuildVars.ENC_PREFIX)) {
+                try {
+                    Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                    SecretKeySpec key = new SecretKeySpec(Utilities.getKey(), "AES");
+                    IvParameterSpec iv = new IvParameterSpec(Utilities.getIv());
+
+                    c.init(Cipher.ENCRYPT_MODE, key, iv);
+                    text = BuildVars.ENC_PREFIX + Utilities.bytesToHex(c.doFinal(text.toString().substring(BuildVars.ENC_PREFIX.length()).getBytes()));
+                } catch (Exception e) {
+                }
+            }
+        }
+
         text = AndroidUtilities.getTrimmedString(text);
         /*if (text.length() > 0 && text.length() <= 14 && replyingMessageObject != null && Emoji.isValidEmoji(text.toString()) && parentFragment != null) {
             SendMessagesHelper.getInstance(currentAccount).sendReaction(replyingMessageObject, text, parentFragment);
