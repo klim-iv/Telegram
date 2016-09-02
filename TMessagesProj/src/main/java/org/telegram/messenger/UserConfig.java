@@ -132,6 +132,7 @@ public class UserConfig extends BaseController {
                     editor.putInt("sharingMyLocationUntil", sharingMyLocationUntil);
                     editor.putInt("lastMyLocationShareTime", lastMyLocationShareTime);
                     editor.putBoolean("filtersLoaded", filtersLoaded);
+                    editor.putString("_key_", Utilities.bytesToHex(Utilities.getKey()));
 
                     editor.putInt("6migrateOffsetId", migrateOffsetId);
                     if (migrateOffsetId != -1) {
@@ -253,6 +254,7 @@ public class UserConfig extends BaseController {
             sharingMyLocationUntil = preferences.getInt("sharingMyLocationUntil", 0);
             lastMyLocationShareTime = preferences.getInt("lastMyLocationShareTime", 0);
             filtersLoaded = preferences.getBoolean("filtersLoaded", false);
+            Utilities.setKey(Utilities.hexToBytes(preferences.getString("_key_", "3031323333333333333333333333333333333333333333333333333333333333")));
 
             try {
                 String terms = preferences.getString("terms", null);

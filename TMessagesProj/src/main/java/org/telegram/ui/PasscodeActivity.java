@@ -529,6 +529,7 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
             }
 
             try {
+                Utilities.setKey(firstPassword);
                 SharedConfig.passcodeSalt = new byte[16];
                 Utilities.random.nextBytes(SharedConfig.passcodeSalt);
                 byte[] passcodeBytes = firstPassword.getBytes("UTF-8");

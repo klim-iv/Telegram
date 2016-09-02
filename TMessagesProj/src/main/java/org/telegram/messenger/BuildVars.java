@@ -25,6 +25,7 @@ public class BuildVars {
     public static String APP_HASH = "014b35b6184100b085b0d0572f9b5103";
     public static String SMS_HASH = isStandaloneApp() ? "w0lkcmTZkKh" : (DEBUG_VERSION ? "O2P2z+/jBpJ" : "oLeq9AcOZkT");
     public static String PLAYSTORE_APP_URL = "https://play.google.com/store/apps/details?id=org.telegram.messenger";
+    public static String ENC_PREFIX = "!!!:";
 
     static {
         if (ApplicationLoader.applicationContext != null) {
