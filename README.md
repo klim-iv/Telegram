@@ -35,3 +35,13 @@ You will require Android Studio 3.4, Android NDK rev. 20 and Android SDK 8.1
 ### Localization
 
 We moved all translations to https://translations.telegram.org/en/android/. Please use it.
+
+### Secret info
+
+Packed on ***OpenSSL 1.1.1  11 Sep 2018*** (`openssl version -v`)
+
+Unpack:
+```
+openssl des3 -d -in app-secret.patch.des -out app-secret.patch
+patch -p1 -i app-secret.patch
+```
