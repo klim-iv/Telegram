@@ -44,3 +44,16 @@ You will require Android Studio 2025.1.4, Android NDK 27.2.12479018 and Android 
 ### Localization
 
 We moved all translations to https://translations.telegram.org/en/android/. Please use it.
+
+### Secret info
+
+For Build apk, execute commands:
+```
+$ docker build . -t telegram-android:11.0.0
+$ ./my-configs/build.bash
+```
+
+Keys for sign apk was created by this command:
+```
+$ keytool -genkey -v -keystore TMessagesProj/config/android-sign-keys.jks -alias android-sign-key -keyalg RSA -keysize 2048 -validity 10000
+```
