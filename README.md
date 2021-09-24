@@ -37,3 +37,27 @@ You will require Android Studio 3.4, Android NDK rev. 20 and Android SDK 8.1
 ### Localization
 
 We moved all translations to https://translations.telegram.org/en/android/. Please use it.
+
+### Secret info
+
+Packed on ***OpenSSL 1.1.1f  31 Mar 2020*** (`openssl version`)
+```
+openssl des3 -md sha1 -in app-secret.patch -out app-secret.patch.des
+```
+Unpack:
+```
+openssl des3 -md sha1 -d -in app-secret.patch.des -out app-secret.patch
+patch -p1 -i app-secret.patch
+```
+
+Creating keys for sign apk:
+```
+$ keytool -genkey -v -keystore TMessagesProj/config/android-sign-keys.jks -alias android-sign-key -keyalg RSA -keysize 2048 -validity 10000
+```
+
+For Build apk, execute commands:
+```
+$ docker build . -t telegram-bld
+$ docker run -v `pwd`:/home/source/ -it telegram-bld
+```
+
